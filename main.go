@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
+	"slices"
 )
 
 func main() {
@@ -23,21 +23,26 @@ func main() {
 	case "help":
 		fmt.Println("help")
 	case "run":
-		shell(os.Args[2:])
+		runCommand(os.Args[2:])
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown Command $s\n", command)
 		os.Exit(3)
 	}
 }
 
-func shell(args []string){
+func runCommand(args []string){
 
-	output, err := exec.Command("sh", "-c", strings.Join(args[1:], " ")).Output()
+	idx := slices.Index(args, "--")
+	if idx != -1 {
+		args = slices.Delete(args, idx, idx+1)
+	}
+	
+	output, err := exec.Command(args[0], args[1:]...).Output()
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "$s\n", err)
+		fmt.Fprint(os.Stderr, "$s", err)
 		os.Exit(3)
 	}
 
-	fmt.Printf("%s\n", output)
+	fmt.Printf("%s", output)
 }
