@@ -2,7 +2,6 @@ package commands
 
 import "fmt"
 
-func Command(){
+func Command() {
 	fmt.Println("Another thing going on")
 }
-
